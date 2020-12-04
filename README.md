@@ -6,7 +6,7 @@ This is a Julia package which implements the adaptive tolerance ABC-MCMC with po
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/mvihola/AdaptiveToleranceABC_MCM.git")
+Pkg.add(url="https://github.com/mvihola/AdaptiveToleranceABC_MCMC.jl.git")
 ```
 
 ## Getting started
