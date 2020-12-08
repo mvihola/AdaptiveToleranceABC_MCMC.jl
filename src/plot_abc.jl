@@ -3,8 +3,6 @@
 
 Plot ABC post-correction estimators with related 95% confidence intervals.
 
-NB: "using Plots" must be called before calling this function.
-
 # Arguments
 - `est`: Output of `abc_postprocess`.
 - `min_tol`: Minimum tolerane.
