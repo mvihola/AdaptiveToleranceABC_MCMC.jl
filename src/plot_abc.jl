@@ -1,5 +1,5 @@
 """
-    plot_abc(est, [min_tol])
+    plot_abc(est; min_tol=0.0, gather=true, labels=nothing, xlabel="\\epsilon")
 
 Plot ABC post-correction estimators with related 95% confidence intervals.
 
@@ -7,11 +7,13 @@ NB: "using Plots" must be called before calling this function.
 
 # Arguments
 - `est`: Output of `abc_postprocess`.
-- `min_tol`: Minimum tolerance (default 0.0).
-- `show`: Whether the plot is shown
+- `min_tol`: Minimum tolerane.
+- `gather`: Whether the individual plots are gathered to one.
+- `labels`: The labels of the estimates.
+- `xlabel`: The label of the x-axis (tolerance).
 """
 function plot_abc(est; min_tol=0.0, gather=true, labels=nothing,
-    xlabel="ϵ")
+    xlabel="\\epsilon")
     lims(x) = (minimum(x), maximum(x))
     d, n = size(est.E)
     v = est.eps .>= min_tol
