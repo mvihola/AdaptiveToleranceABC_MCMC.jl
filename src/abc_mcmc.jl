@@ -1,5 +1,5 @@
 """
-    out = abc_mcmc(theta0, prior, s_obs, sim!, n; [tol=0.0, b=0.1n, adapt_cov=true,
+    out = abc_mcmc(theta0, prior, s_obs, sim!, n; [tol=0.0, b=0.25n, adapt_cov=true,
              adapt_tol=true, cutoff=nothing, sc=1.0, tol_targetAcceptance=0.10,
              rng=MersenneTwister(Random.make.seed())], dist=ABCdefaultDist,
              record_summaries=true)
@@ -33,10 +33,10 @@ Sample from ABC posterior using tolerance adaptive ABC-MCMC.
 """
 function abc_mcmc(theta0::thetaT, prior::PriT, s_obs::summaryT,
     sim!::SimT, n; tol=zero(FT), 
-    b=convert(Int64, ceil(0.1n)),
+    b=convert(Int64, ceil(0.25n)),
     adapt_cov::Bool=true, adapt_tol::Bool=true,
     cutoff::CutoffT=nothing, sc=one(FT), stepSize_eta=FT(0.66),
-    tol_targetAcceptance::FT=FT(0.10), rng=Random.GLOBAL_RNG,
+    tol_targetAcceptance=FT(0.10), rng=Random.GLOBAL_RNG,
     record_summaries::Bool=true, dist=ABCdefaultDist) where {
         FT <: AbstractFloat, 
         thetaT <: AbstractVector{FT},
