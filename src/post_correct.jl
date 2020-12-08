@@ -11,6 +11,36 @@ function eval_testfunction(out, f)
 end
 
 
+function iact_sokal(X::T) where {FT <: AbstractFloat, T <: AbstractVector{FT}}
+    n = length(X)
+    # Calculate centred & normalised X
+    X_ = (X.-mean(X))/sqrt(var(X))
+    # ...and this gives then ACF at specified lag
+    C = FT(max(5.0, log10(n))) # Suggested by Sokal according to
+                               # http://dfm.io/posts/autocorr/
+    tau = one(FT)
+    for k in 1:(n-1)
+        tau += 2.0*dot(X_, 1:(n-k), X_, (1+k):n)/(n-k)
+        if k>C*tau
+            break
+        end
+    end
+    FT(max(0.0, tau))
+end
+
+
+# Default IACT is pessimistic (for safety) -- maximum of three estimators:
+# 1) Sokal's estimator defined above
+# 2) Batch means from MonteCarloMarkovKernels
+# 3) Consistent spectral variance also from MonteCarloMarkovKernels
+@inline function default_iact(X)
+    vX = var(X)
+    BM_iact = MonteCarloMarkovKernels.estimateBM(X)/vX
+    SV_iact = MonteCarloMarkovKernels.estimateSV(X, :ModifiedBartlett)/vX
+    sokal_iact = iact_sokal(X)
+    max(SV_iact, BM_iact, sokal_iact)
+end
+
 # When correction kernel is simple, we may calculate estimates for all epsilon
 # (and then find the suitable epsilon among)
 function is_est(X::Matrix{FT}, D::Vector{FT}, phi::ABCCutoff,
@@ -120,7 +150,7 @@ Calculate post-correction estimates for ABC-MCMC output.
 """
 function abc_postprocess(out, f::Function, tol=nothing;
     regress=false, kernel=out.cutoff, normal_quantile=1.96, 
-    iact = x -> estimateBM(x)/var(x))
+    iact=default_iact)
     if regress
         if out.Summary isa Missing
             error("Summary statistics not recorded; please re-run abc_mcmc with 'record_summaries=true'")

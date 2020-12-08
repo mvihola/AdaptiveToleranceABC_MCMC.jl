@@ -5,8 +5,9 @@ module AdaptiveToleranceABC_MCMC
 export ABCCutoff, ABCSimpleCutoff, ABCGenCutoff, ABCGaussCutoff, ABCEpaCutoff, 
        abc_mcmc, abc_postprocess, ABCdefaultDist, plot_abc
 
-using Statistics, LinearAlgebra, Random, AdaptiveMCMC, 
-      MonteCarloMarkovKernels, Plots
+using Statistics, LinearAlgebra, Random, AdaptiveMCMC
+
+import MonteCarloMarkovKernels, Plots
 
 # Abstract 'cutoff function' type
 abstract type ABCCutoff end

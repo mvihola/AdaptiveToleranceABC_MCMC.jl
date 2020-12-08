@@ -68,7 +68,7 @@ function abc_mcmc(theta0::thetaT, prior::PriT, s_obs::summaryT,
         tolerance.sc[] = -log(tol)
         tols_ = zeros(FT,b)
     else
-        tols_ = zeros(FT, 0)
+        tols_ = nothing
     end
     if typeof(cutoff) == ABCCutoff
         phi = cutoff
@@ -81,7 +81,7 @@ function abc_mcmc(theta0::thetaT, prior::PriT, s_obs::summaryT,
             error("Unknown cutoff")
         end
     else
-        phi = ABCCutoff(tol, cutoff)
+        phi = ABCCutoff(FT(tol), cutoff)
     end
 
     if adapt_cov
@@ -129,7 +129,9 @@ function abc_mcmc(theta0::thetaT, prior::PriT, s_obs::summaryT,
             all_acc += 1
             acc += (k>b)
         end
-        AdaptiveMCMC.adapt!(proposal, rwm, α, k)
+        if adapt_cov
+            AdaptiveMCMC.adapt!(proposal, rwm, α, k)
+        end
         if adapt_tol && k <= b
             AdaptiveMCMC.adapt!(tolerance, rwm, α, k)
             phi.tol = tols_[k] = exp(-tolerance.sc[])
