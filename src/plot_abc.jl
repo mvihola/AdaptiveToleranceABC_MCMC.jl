@@ -1,16 +1,21 @@
+function default_min_tol(est; n_min=20)
+    n_min = min(n_min, length(est.eps))
+    est.eps[n_min]
+end
+
 """
-    plot_abc(est; min_tol=0.0, gather=true, labels=nothing, xlabel="\\epsilon")
+    plot_abc(est; min_tol=default, gather=true, labels=nothing, xlabel="\\epsilon")
 
 Plot ABC post-correction estimators with related 95% confidence intervals.
 
 # Arguments
 - `est`: Output of `abc_postprocess`.
-- `min_tol`: Minimum tolerane.
+- `min_tol`: Minimum tolerance. By default, 20th smallest sample tolerance.
 - `gather`: Whether the individual plots are gathered to one.
 - `labels`: The labels of the estimates.
 - `xlabel`: The label of the x-axis (tolerance).
 """
-function plot_abc(est; min_tol=0.0, gather=true, labels=nothing,
+function plot_abc(est; min_tol=default_min_tol(est), gather=true, labels=nothing,
     xlabel="\\epsilon")
     lims(x) = (minimum(x), maximum(x))
     d, n = size(est.E)
