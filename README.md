@@ -6,7 +6,8 @@ This is a Julia package which implements the adaptive tolerance ABC-MCMC with po
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/mvihola/AdaptiveToleranceABC_MCMC.jl.git")
+Pkg.add(url="https://github.com/awllee/MonteCarloMarkovKernels.jl")
+Pkg.add(url="https://github.com/mvihola/AdaptiveToleranceABC_MCMC.jl")
 ```
 
 ## Getting started
