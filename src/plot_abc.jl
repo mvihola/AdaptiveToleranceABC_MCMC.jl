@@ -28,7 +28,7 @@ function plot_abc(est; min_tol=default_min_tol(est), gather=true, labels=nothing
     p = Vector{Plots.Plot}(undef, 0)
     for i in 1:d
         E_ = est.E[i,v]; L_ = est.ci_L[i,v];  U_ = est.ci_U[i,v]
-        push!(p, Plots.plot(eps_, E_, ribbon=[E_-L_, U_-E_], color=:black,
+        push!(p, Plots.plot(eps_, E_, ribbon=(E_-L_, U_-E_), color=:black,
                           fillalpha=0.3, legend=false, xlim=lims(eps_),
                           framestyle=:axes))
         if !(labels isa Nothing)

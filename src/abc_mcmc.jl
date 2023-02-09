@@ -50,7 +50,6 @@ function abc_mcmc(theta0::thetaT, prior::PriT, s_obs::summaryT,
     d_obs = length(s_obs)
     s = deepcopy(s_obs); s_ = deepcopy(s_obs)
 
-    p_theta = prior(theta0)
     y_dist = FT(Inf)
 
     # Ensure that initial distance is finite & postive:
@@ -111,15 +110,27 @@ function abc_mcmc(theta0::thetaT, prior::PriT, s_obs::summaryT,
     end
     Theta = Array{FT}(undef,d,n)
     Dist = Vector{FT}(undef,n)
+ 
+    stats = abc_mcmc_!(Theta, Dist, Summary, tols_, s_obs, n, b, rwm, proposal, rng,
+    s, s_, y_phi, y_dist, tolerance, adapt_cov, adapt_tol, proposal_burnin, record_summaries, phi, sim!, dist, prior)
+
+    (Theta = Theta, Dist = Dist, Summary = Summary, s_obs = s_obs, cutoff = phi, 
+    Stats = stats, theta0 = theta0)
+end
+
+# Worker:
+function abc_mcmc_!(Theta, Dist, Summary, tols_, s_obs, n, b, rwm, proposal, rng,
+    s, s_, y_phi, y_dist, tolerance, adapt_cov, adapt_tol, proposal_burnin, record_summaries, phi, sim!::Function, dist::Function, prior::Function)
+
+    p_theta = prior(rwm.x)
     all_acc = 0; acc = 0
-    z = zeros(d)
     for k in 1:(n+b)
         AdaptiveMCMC.draw!(rwm, proposal)
         p_theta_ = prior(rwm.y)
         sim!(s_, rwm.y, rng)
         y_dist_ = dist(s_, s_obs)
         y_phi_ = phi(y_dist_)
-        α = min(one(FT), exp(p_theta_ - p_theta)*y_phi_/y_phi)
+        α = min(one(p_theta_), exp(p_theta_ - p_theta)*y_phi_/y_phi)
         accept = (rand(rng) < α)
         if accept
             accept!(rwm)
@@ -147,9 +158,6 @@ function abc_mcmc(theta0::thetaT, prior::PriT, s_obs::summaryT,
             end
         end
     end
-    stats = (all_acc = all_acc/(n+b), acc = acc/n, 
+    return (all_acc = all_acc/(n+b), acc = acc/n, 
        rwm = rwm, adapt = proposal, adapt_burnin = proposal_burnin, tol = tols_)
-
-    (Theta = Theta, Dist = Dist, Summary = Summary, s_obs = s_obs, cutoff = phi, 
-    Stats = stats, theta0 = theta0)
 end
